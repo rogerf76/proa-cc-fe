@@ -13,7 +13,7 @@ export const MainMapComponent = () => {
                 longitude: -122.4,
                 zoom: 14
             }}
-            style={{ width: 800, height: 600 }}
+            
             mapStyle="mapbox://styles/mapbox/streets-v9"
             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
         >
