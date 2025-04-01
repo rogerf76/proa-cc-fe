@@ -28,7 +28,7 @@ export const MainMapComponent = () => {
     useEffect(() => {
         const fetchMarkers = async () => {
             try {
-                const response = await fetch("http://localhost:3001/mapdata");
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/mapdata`);
                 const data: ApiMarker[] = await response.json();
                 
                 const transformedMarkers: MarkerData[] = data.map(item => ({
