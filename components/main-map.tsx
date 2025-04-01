@@ -135,7 +135,11 @@ export const MainMapComponent = () => {
                     longitude={marker.longitude}
                     latitude={marker.latitude}
                     color={marker.color}
-                    onClick={() => setSelectedMarker(marker) }
+                    onClick={() => {
+                        // Reset selected marker first, to clear measurements state from previous marker
+                        setSelectedMarker(null);
+                        setTimeout(() => setSelectedMarker(marker), 0);
+                    }}
                 />
             ))}
 
