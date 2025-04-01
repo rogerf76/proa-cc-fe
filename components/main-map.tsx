@@ -18,6 +18,11 @@ interface MarkerData {
     color: string;
 }
 
+interface Measurements {
+    // Add measurement fields as needed
+    [key: string]: any;
+}
+
 interface ApiMarker {
     id: number;
     ws_name: string;
@@ -27,6 +32,60 @@ interface ApiMarker {
     latitude: string;
     longitude: string;
 }
+
+interface PopupBodyProps {
+    marker: MarkerData;
+}
+
+interface LabelValueProps {
+    label: string;
+    value: string;
+}
+
+const LabelValue: React.FC<LabelValueProps> = ({ label, value }) => (
+    <>
+        <div><span className="font-bold">{label}:</span></div>
+        <div className="col-span-3"><span>{value}</span></div>
+    </>
+);
+
+const PopupBody: React.FC<PopupBodyProps> = ({ marker }) => {
+    const [measurements, setMeasurements] = useState<Measurements | null>(null);
+
+    useEffect(() => {
+        const fetchMeasurements = async () => {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/measurements/${marker.id}`);
+                const data = await response.json();
+                setMeasurements(data);
+            } catch (error) {
+                console.error('Error fetching measurements:', error);
+            }
+        };
+
+        fetchMeasurements();
+    }, [marker.id]);
+
+    return (
+        <div>
+            <div className="grid grid-cols-4 gap-1">
+                <LabelValue label="Name" value={marker.ws_name} />
+                <LabelValue label="Site" value={marker.site} />
+                <LabelValue label="Portfolio" value={marker.portfolio} />
+                <LabelValue label="State" value={marker.state} />
+            </div>
+            
+            {measurements && (
+                <div className="mt-4">
+                    <h3 className="font-bold mb-2">Measurements:</h3>
+                    <pre className="text-sm">
+                        {JSON.stringify(measurements, null, 2)}
+                    </pre>
+                </div>
+            )}
+        </div>
+    );
+};
 
 export const MainMapComponent = () => {
     const [markers, setMarkers] = useState<MarkerData[]>([]);
@@ -88,19 +147,7 @@ export const MainMapComponent = () => {
                     closeOnClick={false}
                     anchor="bottom"
                 >
-                    <div className="grid grid-cols-4 gap-1">
-                        <div><span className="font-bold">Name:</span></div>
-                        <div className="col-span-3"><span>{selectedMarker.ws_name}</span></div>
-
-                        <div><span className="font-bold">Site:</span></div>
-                        <div className="col-span-3"><span>{selectedMarker.site}</span></div>
-
-                        <div><span className="font-bold">Portfolio:</span></div>
-                        <div className="col-span-3"><span>{selectedMarker.portfolio}</span></div>
-
-                        <div><span className="font-bold">State:</span></div>
-                        <div className="col-span-3"><span>{selectedMarker.state}</span></div>
-                    </div>
+                    <PopupBody marker={selectedMarker} />
                 </Popup>
             )}
         </Map>
