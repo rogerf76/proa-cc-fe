@@ -9,6 +9,12 @@ interface MarkerData {
     id: number;
     longitude: number;
     latitude: number;
+
+    ws_name: string;
+    site: string;
+    portfolio: string;
+    state: string;
+
     color: string;
 }
 
@@ -36,7 +42,11 @@ export const MainMapComponent = () => {
                     id: item.id,
                     longitude: parseFloat(item.longitude),
                     latitude: parseFloat(item.latitude),
-                    color: "red" // You can customize this based on portfolio or other criteria
+                    ws_name: item.ws_name,
+                    site: item.site,
+                    portfolio: item.portfolio,
+                    state: item.state,
+                    color: "red"
                 }));
 
                 setMarkers(transformedMarkers);
@@ -66,11 +76,7 @@ export const MainMapComponent = () => {
                     longitude={marker.longitude}
                     latitude={marker.latitude}
                     color={marker.color}
-                    onClick={() => {
-                        console.log('clicked marker', marker);
-                        setSelectedMarker(marker)
-                    }
-                    }
+                    onClick={() => setSelectedMarker(marker) }
                 />
             ))}
 
@@ -82,7 +88,19 @@ export const MainMapComponent = () => {
                     closeOnClick={false}
                     anchor="bottom"
                 >
-                    Some Text
+                    <div className="grid grid-cols-4 gap-1">
+                        <div><span className="font-bold">Name:</span></div>
+                        <div className="col-span-3"><span>{selectedMarker.ws_name}</span></div>
+
+                        <div><span className="font-bold">Site:</span></div>
+                        <div className="col-span-3"><span>{selectedMarker.site}</span></div>
+
+                        <div><span className="font-bold">Portfolio:</span></div>
+                        <div className="col-span-3"><span>{selectedMarker.portfolio}</span></div>
+
+                        <div><span className="font-bold">State:</span></div>
+                        <div className="col-span-3"><span>{selectedMarker.state}</span></div>
+                    </div>
                 </Popup>
             )}
         </Map>
