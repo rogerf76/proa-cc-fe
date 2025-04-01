@@ -1,6 +1,21 @@
+'use client';
 import { MainMapComponent } from '@/components/main-map';
+import { useState } from 'react';
+
+const AUSTRALIAN_STATES = [
+    { id: 'NSW', name: 'New South Wales' },
+    { id: 'VIC', name: 'Victoria' },
+    { id: 'QLD', name: 'Queensland' },
+    { id: 'WA', name: 'Western Australia' },
+    { id: 'SA', name: 'South Australia' },
+    { id: 'TAS', name: 'Tasmania' },
+    { id: 'ACT', name: 'Australian Capital Territory' },
+    { id: 'NT', name: 'Northern Territory' }
+];
 
 export default function Home() {
+    const [selectedState, setSelectedState] = useState<string>('');
+
     return (
         <div className="flex flex-col h-screen">
             <nav className="bg-gray-800 text-white p-4">
@@ -12,11 +27,28 @@ export default function Home() {
                     {/* Sidebar content */}
                     <div className="space-y-4">
                         <h2 className="font-semibold text-black">Navigation</h2>
-                        {/* Add sidebar items here */}
+                        <div>
+                            <label htmlFor="state-select" className="block text-sm font-medium text-gray-700 mb-1">
+                                Select State
+                            </label>
+                            <select
+                                id="state-select"
+                                className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                value={selectedState}
+                                onChange={(e) => setSelectedState(e.target.value)}
+                            >
+                                <option value="">All States</option>
+                                {AUSTRALIAN_STATES.map((state) => (
+                                    <option key={state.id} value={state.id}>
+                                        {state.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <main className="flex-1">
-                    <MainMapComponent />
+                    <MainMapComponent selectedState={selectedState} />
                 </main>
             </div>
         </div>

@@ -121,7 +121,11 @@ const PopupBody: React.FC<PopupBodyProps> = ({ marker }) => {
     );
 };
 
-export const MainMapComponent = () => {
+export interface MainMapComponentProps {
+    selectedState?: string;
+}
+
+export const MainMapComponent: React.FC<MainMapComponentProps> = ({ selectedState }) => {
     const [markers, setMarkers] = useState<MarkerData[]>([]);
     const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
 
@@ -151,6 +155,10 @@ export const MainMapComponent = () => {
         fetchMarkers();
     }, []);
 
+    const filteredMarkers = selectedState 
+        ? markers.filter(marker => marker.state === selectedState)
+        : markers;
+
     return (
         <Map
             initialViewState={{
@@ -160,11 +168,10 @@ export const MainMapComponent = () => {
                 // About right for HD, desktop
                 zoom: 4.0
             }}
-
             mapStyle="mapbox://styles/mapbox/streets-v9"
             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
         >
-            {markers.map(marker => (
+            {filteredMarkers.map(marker => (
                 <Marker
                     longitude={marker.longitude}
                     latitude={marker.latitude}
