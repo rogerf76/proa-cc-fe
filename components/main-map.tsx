@@ -26,6 +26,14 @@ interface MeasurementRecord {
     timestamp: Date;
 }
 
+export interface VariableRecord {
+    id: number;
+    variable_id: number;
+    variable_name: string;
+    long_name: string;
+    unit: string;
+}
+
 interface ApiMarker {
     id: number;
     ws_name: string;
@@ -54,20 +62,29 @@ const LabelValue: React.FC<LabelValueProps> = ({ label, value }) => (
 
 const PopupBody: React.FC<PopupBodyProps> = ({ marker }) => {
     const [measurements, setMeasurements] = useState<MeasurementRecord[] | null>(null);
+    const [variables, setVariables] = useState<VariableRecord[] | null>(null);
 
     useEffect(() => {
-        const fetchMeasurements = async () => {
+        const fetchData = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/measurements/${marker.id}`);
-                const data = await response.json();
-                setMeasurements(data);
+                // Fetch variables if not already fetched
+                if (!variables) {
+                    const variablesResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/variables`);
+                    const variablesData = await variablesResponse.json();
+                    setVariables(variablesData);
+                }
+
+                // Fetch measurements
+                const measurementsResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/measurements/${marker.id}`);
+                const measurementsData = await measurementsResponse.json();
+                setMeasurements(measurementsData);
             } catch (error) {
-                console.error('Error fetching measurements:', error);
+                console.error('Error fetching data:', error);
             }
         };
 
-        fetchMeasurements();
-    }, [marker.id]);
+        fetchData();
+    }, [marker.id, variables]);
 
     return (
         <div>
@@ -78,18 +95,25 @@ const PopupBody: React.FC<PopupBodyProps> = ({ marker }) => {
                 <LabelValue label="State" value={marker.state} />
             </div>
             
-            {measurements && (
+            {measurements && variables && (
                 <div className="mt-4">
                     <h3 className="font-bold mb-2">Measurements:</h3>
                     <div className="text-sm">
-                        {measurements.map((record) => (
-                            <div key={record.id} className="mb-2">
-                                <div><span className="font-bold">{record.variable_name}:</span> {record.value}</div>
-                                <div className="text-xs text-gray-500">
-                                    {new Date(record.timestamp).toLocaleString()}
+                        {measurements.map((record) => {
+                            const variable = variables.find(v => v.variable_name === record.variable_name);
+                            return (
+                                <div key={record.id} className="mb-2">
+                                    <div>
+                                        <span className="font-bold">
+                                            {variable ? variable.long_name : record.variable_name}:
+                                        </span> {record.value} {variable?.unit}
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                        {new Date(record.timestamp).toLocaleString()}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             )}
