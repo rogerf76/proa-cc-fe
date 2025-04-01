@@ -18,9 +18,12 @@ interface MarkerData {
     color: string;
 }
 
-interface Measurements {
-    // Add measurement fields as needed
-    [key: string]: any;
+interface MeasurementRecord {
+    id: number;
+    property_id: number;
+    variable_name: string;
+    value: number;
+    timestamp: Date;
 }
 
 interface ApiMarker {
@@ -50,7 +53,7 @@ const LabelValue: React.FC<LabelValueProps> = ({ label, value }) => (
 );
 
 const PopupBody: React.FC<PopupBodyProps> = ({ marker }) => {
-    const [measurements, setMeasurements] = useState<Measurements | null>(null);
+    const [measurements, setMeasurements] = useState<MeasurementRecord[] | null>(null);
 
     useEffect(() => {
         const fetchMeasurements = async () => {
@@ -78,9 +81,16 @@ const PopupBody: React.FC<PopupBodyProps> = ({ marker }) => {
             {measurements && (
                 <div className="mt-4">
                     <h3 className="font-bold mb-2">Measurements:</h3>
-                    <pre className="text-sm">
-                        {JSON.stringify(measurements, null, 2)}
-                    </pre>
+                    <div className="text-sm">
+                        {measurements.map((record) => (
+                            <div key={record.id} className="mb-2">
+                                <div><span className="font-bold">{record.variable_name}:</span> {record.value}</div>
+                                <div className="text-xs text-gray-500">
+                                    {new Date(record.timestamp).toLocaleString()}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
