@@ -8,7 +8,7 @@ export default function Home() {
                 <h1 className="text-xl font-bold">Roger French - Proa technical interview submission</h1>
             </nav>
             <div className="flex flex-col md:flex-row h-full w-full">
-                <div className="h-32 md:w-64 bg-gray-100 p-4">
+                <div className="h-32 md:h-full md:w-64 bg-gray-100 p-4">
                     {/* Sidebar content */}
                     <div className="space-y-4">
                         <h2 className="font-semibold text-black">Navigation</h2>
